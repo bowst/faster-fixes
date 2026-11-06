@@ -59,6 +59,7 @@ function KanbanCardView({
     feedback.issueLink,
     feedback.linearIssueLink,
     feedback.jiraIssueLink,
+    feedback.teamworkTaskLink,
   ].some(Boolean);
 
   return (

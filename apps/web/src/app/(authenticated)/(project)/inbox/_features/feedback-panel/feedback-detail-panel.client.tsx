@@ -26,6 +26,7 @@ type FeedbackDetailPanelProps = {
   hasGitHubLink?: boolean;
   hasLinearLink?: boolean;
   hasJiraLink?: boolean;
+  hasTeamworkLink?: boolean;
 };
 
 export function FeedbackDetailPanel({
@@ -36,6 +37,7 @@ export function FeedbackDetailPanel({
   hasGitHubLink = false,
   hasLinearLink = false,
   hasJiraLink = false,
+  hasTeamworkLink = false,
 }: FeedbackDetailPanelProps) {
   if (!feedback) return null;
 
@@ -83,6 +85,7 @@ export function FeedbackDetailPanel({
             hasGitHubLink={hasGitHubLink}
             hasLinearLink={hasLinearLink}
             hasJiraLink={hasJiraLink}
+            hasTeamworkLink={hasTeamworkLink}
           />
         </div>
       </SheetContent>

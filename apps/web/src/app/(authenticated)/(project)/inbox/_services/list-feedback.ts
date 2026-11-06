@@ -61,6 +61,12 @@ export async function listFeedback(
           issueStatusCategory: true,
         },
       },
+      teamworkTaskLink: {
+        select: {
+          taskId: true,
+          taskUrl: true,
+        },
+      },
       rank: { select: { key: true } },
     },
   });
@@ -97,6 +103,7 @@ export async function listFeedback(
       issueLink: f.issueLink,
       linearIssueLink: f.linearIssueLink,
       jiraIssueLink: f.jiraIssueLink,
+      teamworkTaskLink: f.teamworkTaskLink,
       rank: f.rank?.key ?? null,
     })),
   );

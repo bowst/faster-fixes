@@ -10,6 +10,7 @@ import { GitHubSection } from "./github/github-section.client";
 import { JiraSection } from "./jira/jira-section.client";
 import { LinearSection } from "./linear/linear-section.client";
 import { SlackSection } from "./slack/slack-section.client";
+import { TeamworkSection } from "./teamwork/teamwork-section.client";
 import { UpdateProjectForm } from "./update/update-project-form.client";
 
 type ProjectSettingsTabProps = {
@@ -62,6 +63,15 @@ export function ProjectSettingsTab({ projectId }: ProjectSettingsTabProps) {
         cardClassName="lg:max-w-lg"
       >
         <JiraSection projectId={projectId} />
+      </DashboardSection>
+
+      <DashboardSection
+        title="Teamwork"
+        description="Link a Teamwork task list to create tasks from feedback."
+        cardTitle="Teamwork integration"
+        cardClassName="lg:max-w-lg"
+      >
+        <TeamworkSection projectId={projectId} />
       </DashboardSection>
 
       <DashboardSection

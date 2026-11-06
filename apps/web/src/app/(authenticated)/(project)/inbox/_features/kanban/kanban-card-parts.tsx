@@ -8,7 +8,7 @@ import { GithubIcon } from "@workspace/ui/components/icons/github-icon";
 import { JiraIcon } from "@workspace/ui/components/icons/jira-icon";
 import { LinearIcon } from "@workspace/ui/components/icons/linear-icon";
 import { cn } from "@workspace/ui/lib/utils";
-import { Clock, UserRound } from "lucide-react";
+import { Clock, ListChecks, UserRound } from "lucide-react";
 import type { ListFeedbackOutput } from "../../_services/list-feedback";
 
 type FeedbackItem = ListFeedbackOutput[number];
@@ -92,6 +92,11 @@ export function TrackerChips({ feedback }: TrackerChipsProps) {
       key: "jira",
       icon: JiraIcon,
       label: feedback.jiraIssueLink.issueKey,
+    },
+    feedback.teamworkTaskLink && {
+      key: "teamwork",
+      icon: ListChecks,
+      label: feedback.teamworkTaskLink.taskId,
     },
   ].filter((chip) => !!chip);
 

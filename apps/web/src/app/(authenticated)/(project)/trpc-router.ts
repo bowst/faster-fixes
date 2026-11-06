@@ -47,6 +47,18 @@ import { UnlinkLinearTeamSchema } from "./settings/_services/unlink-linear-team.
 import { updateProjectLinearLink } from "./settings/_services/update-project-linear-link";
 import { UpdateProjectLinearLinkSchema } from "./settings/_services/update-project-linear-link.schema";
 import { getProjectSlackLink } from "./settings/_services/get-project-slack-link";
+import { getProjectTeamworkLink } from "./settings/_services/get-project-teamwork-link";
+import { GetProjectTeamworkLinkSchema } from "./settings/_services/get-project-teamwork-link.schema";
+import { linkTeamworkProject } from "./settings/_services/link-teamwork-project";
+import { LinkTeamworkProjectSchema } from "./settings/_services/link-teamwork-project.schema";
+import { listAccessibleTeamworkProjects } from "./settings/_services/list-accessible-teamwork-projects";
+import { ListAccessibleTeamworkProjectsSchema } from "./settings/_services/list-accessible-teamwork-projects.schema";
+import { listTeamworkTasklistsForProject } from "./settings/_services/list-teamwork-tasklists-for-project";
+import { ListTeamworkTasklistsForProjectSchema } from "./settings/_services/list-teamwork-tasklists-for-project.schema";
+import { unlinkTeamworkProject } from "./settings/_services/unlink-teamwork-project";
+import { UnlinkTeamworkProjectSchema } from "./settings/_services/unlink-teamwork-project.schema";
+import { updateProjectTeamworkLink } from "./settings/_services/update-project-teamwork-link";
+import { UpdateProjectTeamworkLinkSchema } from "./settings/_services/update-project-teamwork-link.schema";
 import { GetProjectSlackLinkSchema } from "./settings/_services/get-project-slack-link.schema";
 import { linkRepo } from "./settings/_services/link-repo";
 import { LinkRepoSchema } from "./settings/_services/link-repo.schema";
@@ -69,6 +81,8 @@ import { CreateGitHubIssueForFeedbackSchema } from "./inbox/_services/create-git
 import { createJiraIssueForFeedback } from "./inbox/_services/create-jira-issue-for-feedback";
 import { CreateJiraIssueForFeedbackSchema } from "./inbox/_services/create-jira-issue-for-feedback.schema";
 import { createLinearIssueForFeedback } from "./inbox/_services/create-linear-issue-for-feedback";
+import { createTeamworkTaskForFeedback } from "./inbox/_services/create-teamwork-task-for-feedback";
+import { CreateTeamworkTaskForFeedbackSchema } from "./inbox/_services/create-teamwork-task-for-feedback.schema";
 import { CreateLinearIssueForFeedbackSchema } from "./inbox/_services/create-linear-issue-for-feedback.schema";
 import { deleteFeedback } from "./inbox/_services/delete-feedback";
 import { DeleteFeedbackSchema } from "./inbox/_services/delete-feedback.schema";
@@ -320,6 +334,14 @@ export const projectsRouter = router({
           userId: ctx.session.user.id,
         }),
       ),
+    createTeamworkTask: protectedProcedure
+      .input(CreateTeamworkTaskForFeedbackSchema)
+      .mutation(({ input, ctx }) =>
+        createTeamworkTaskForFeedback({
+          feedbackId: input.feedbackId,
+          userId: ctx.session.user.id,
+        }),
+      ),
   }),
   // The plan-gated writes keep `enforceFeature`: a plan denial is transport
   // policy and has no domain-error equivalent.
@@ -467,6 +489,58 @@ export const projectsRouter = router({
           projectId: input.projectId,
           autoCreateIssues: input.autoCreateIssues,
           defaultLabels: input.defaultLabels,
+          userId: ctx.session.user.id,
+        }),
+      ),
+  }),
+  teamwork: router({
+    getLink: protectedProcedure
+      .input(GetProjectTeamworkLinkSchema)
+      .query(({ input, ctx }) =>
+        getProjectTeamworkLink({
+          projectId: input.projectId,
+          userId: ctx.session.user.id,
+        }),
+      ),
+    listProjects: protectedProcedure
+      .input(ListAccessibleTeamworkProjectsSchema)
+      .query(({ input, ctx }) =>
+        listAccessibleTeamworkProjects({
+          projectId: input.projectId,
+          userId: ctx.session.user.id,
+        }),
+      ),
+    listTasklists: protectedProcedure
+      .input(ListTeamworkTasklistsForProjectSchema)
+      .query(({ input, ctx }) =>
+        listTeamworkTasklistsForProject({
+          projectId: input.projectId,
+          teamworkProjectId: input.teamworkProjectId,
+          userId: ctx.session.user.id,
+        }),
+      ),
+    linkProject: protectedProcedure
+      .input(LinkTeamworkProjectSchema)
+      .use(enforceFeature("teamworkIntegration"))
+      .mutation(({ input, ctx }) =>
+        linkTeamworkProject({ ...input, userId: ctx.session.user.id }),
+      ),
+    // Not plan-gated: a downgraded Organization must always be able to unlink.
+    unlinkProject: protectedProcedure
+      .input(UnlinkTeamworkProjectSchema)
+      .mutation(({ input, ctx }) =>
+        unlinkTeamworkProject({
+          projectId: input.projectId,
+          userId: ctx.session.user.id,
+        }),
+      ),
+    updateLink: protectedProcedure
+      .input(UpdateProjectTeamworkLinkSchema)
+      .use(enforceFeature("teamworkIntegration"))
+      .mutation(({ input, ctx }) =>
+        updateProjectTeamworkLink({
+          projectId: input.projectId,
+          autoCreateTasks: input.autoCreateTasks,
           userId: ctx.session.user.id,
         }),
       ),
