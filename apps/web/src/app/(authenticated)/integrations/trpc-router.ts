@@ -1,5 +1,7 @@
 import { protectedProcedure, router } from "@/server/trpc/trpc";
 import { headers } from "next/headers";
+import { upsertTeamworkInstallation } from "./_services/upsert-teamwork-installation";
+import { UpsertTeamworkInstallationSchema } from "./_services/upsert-teamwork-installation.schema";
 import { createAgentToken } from "./_services/create-agent-token";
 import { CreateAgentTokenSchema } from "./_services/create-agent-token.schema";
 import { deleteAgentToken } from "./_services/delete-agent-token";
@@ -8,10 +10,12 @@ import { disconnectGitHub } from "./_services/disconnect-github";
 import { disconnectJira } from "./_services/disconnect-jira";
 import { disconnectLinear } from "./_services/disconnect-linear";
 import { disconnectSlack } from "./_services/disconnect-slack";
+import { disconnectTeamwork } from "./_services/disconnect-teamwork";
 import { getGitHubInstallation } from "./_services/get-github-installation";
 import { getJiraInstallation } from "./_services/get-jira-installation";
 import { getLinearInstallation } from "./_services/get-linear-installation";
 import { getSlackInstallation } from "./_services/get-slack-installation";
+import { getTeamworkInstallation } from "./_services/get-teamwork-installation";
 import { listAccessibleJiraSites } from "./_services/list-accessible-jira-sites";
 import { listAgentTokens } from "./_services/list-agent-tokens";
 import { ListAgentTokensSchema } from "./_services/list-agent-tokens.schema";
@@ -115,6 +119,30 @@ export const integrationsRouter = router({
       ),
     disconnect: protectedProcedure.mutation(async ({ ctx }) =>
       disconnectJira({
+        headers: await headers(),
+        userId: ctx.session.user.id,
+      }),
+    ),
+  }),
+  teamwork: router({
+    getInstallation: protectedProcedure.query(async ({ ctx }) =>
+      getTeamworkInstallation({
+        headers: await headers(),
+        userId: ctx.session.user.id,
+      }),
+    ),
+    connect: protectedProcedure
+      .input(UpsertTeamworkInstallationSchema)
+      .mutation(async ({ input, ctx }) =>
+        upsertTeamworkInstallation({
+          siteUrl: input.siteUrl,
+          apiKey: input.apiKey,
+          headers: await headers(),
+          userId: ctx.session.user.id,
+        }),
+      ),
+    disconnect: protectedProcedure.mutation(async ({ ctx }) =>
+      disconnectTeamwork({
         headers: await headers(),
         userId: ctx.session.user.id,
       }),
