@@ -1,0 +1,84 @@
+model TeamworkInstallation {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String       @unique
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // Teamwork.com site every REST call targets, normalized to its origin
+  // (https://example.teamwork.com). `siteName` is the account name Teamwork
+  // reported when the key was validated.
+  siteUrl  String
+  siteName String
+
+  // A Teamwork API key authenticates as the person who generated it, so tasks
+  // are created under that person. Encrypted at rest with AES-256-GCM (ADR 0003).
+  apiKey String // ciphertext
+
+  // The Teamwork person the key belongs to, shown in settings so admins know
+  // whose key is in use.
+  teamworkUserName String
+
+  installedById String?
+  installedBy   Member? @relation(fields: [installedById], references: [id], onDelete: SetNull)
+
+  projectLinks ProjectTeamworkLink[]
+
+  @@index([organizationId])
+  @@map("teamwork_installation")
+}
+
+model ProjectTeamworkLink {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projectId String  @unique
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  teamworkInstallationId String
+  teamworkInstallation   TeamworkInstallation @relation(fields: [teamworkInstallationId], references: [id], onDelete: Cascade)
+
+  // Names are denormalized so settings can render the link without a Teamwork
+  // round-trip; they are refreshed whenever the link is re-picked.
+  teamworkProjectId   String
+  teamworkProjectName String
+  tasklistId          String
+  tasklistName        String
+
+  // Off by default: most Feedback is triaged in the inbox and sent by hand.
+  autoCreateTasks Boolean @default(false)
+
+  // null=healthy, "stale_tasklist" when Teamwork rejects the linked task list.
+  linkHealthIssue String?
+
+  feedbackTaskLinks FeedbackTeamworkTaskLink[]
+
+  @@index([teamworkInstallationId])
+  @@map("project_teamwork_link")
+}
+
+model FeedbackTeamworkTaskLink {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  feedbackId String   @unique
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  projectTeamworkLinkId String
+  projectTeamworkLink   ProjectTeamworkLink @relation(fields: [projectTeamworkLinkId], references: [id], onDelete: Cascade)
+
+  taskId  String
+  taskUrl String
+
+  // Carried from creation so inbound status sync can apply the same loop guard
+  // as the other Trackers without a data migration.
+  lastSyncSource String?
+  lastSyncAt     DateTime?
+
+  @@index([projectTeamworkLinkId])
+  @@index([taskId])
+  @@map("feedback_teamwork_task_link")
+}

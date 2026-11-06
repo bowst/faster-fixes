@@ -18,10 +18,11 @@ model Organization {
   projects    Project[]
   agentTokens AgentToken[]
 
-  gitHubInstallations GitHubInstallation[]
-  linearInstallation  LinearInstallation?
-  jiraInstallation    JiraInstallation?
-  slackInstallation   SlackInstallation?
+  gitHubInstallations  GitHubInstallation[]
+  linearInstallation   LinearInstallation?
+  jiraInstallation     JiraInstallation?
+  teamworkInstallation TeamworkInstallation?
+  slackInstallation    SlackInstallation?
 
   testimonialRequest TestimonialRequest?
   testimonials       Testimonial[]
@@ -41,11 +42,12 @@ model Member {
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           String       @default("member")
 
-  assignedFeedback             Feedback[]
-  gitHubInstallations          GitHubInstallation[]
-  linearInstallationsInstalled LinearInstallation[]
-  jiraInstallationsInstalled   JiraInstallation[]
-  slackInstallations           SlackInstallation[]
+  assignedFeedback               Feedback[]
+  gitHubInstallations            GitHubInstallation[]
+  linearInstallationsInstalled   LinearInstallation[]
+  jiraInstallationsInstalled     JiraInstallation[]
+  teamworkInstallationsInstalled TeamworkInstallation[]
+  slackInstallations             SlackInstallation[]
 
   @@index([organizationId])
   @@index([userId])
