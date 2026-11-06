@@ -91,6 +91,23 @@ describe("formatTeamworkTaskDescription", () => {
     expect(text).toContain("](https://example.com/a%20%28b%29)");
   });
 
+  it("never links a non-http page URL", () => {
+    const text = formatTeamworkTaskDescription({
+      ...feedback,
+      pageUrl: "javascript:alert(1)",
+    });
+    expect(text).not.toContain("](javascript:");
+    expect(text).toContain("**Page:** javascript:alert\\(1\\)");
+  });
+
+  it("keeps a multi-line selector inside one code span", () => {
+    const text = formatTeamworkTaskDescription({
+      ...feedback,
+      selector: "#a\n\n# Injected `x`",
+    });
+    expect(text).toContain("**Element:** `#a # Injected 'x'`");
+  });
+
   it("lists diagnostics with one line per entry", () => {
     const text = formatTeamworkTaskDescription(feedback);
 

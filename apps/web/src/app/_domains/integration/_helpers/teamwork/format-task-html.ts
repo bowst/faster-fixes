@@ -31,17 +31,29 @@ function escapeMarkdown(value: string): string {
     .replace(/>/g, "&gt;");
 }
 
-// Parentheses and spaces end a Markdown link target early.
-function escapeUrl(url: string): string {
-  return url.replace(/ /g, "%20").replace(/\(/g, "%28").replace(/\)/g, "%29");
+// Only http(s) targets become links, so a reviewer cannot plant a
+// `javascript:` link. `href` percent-encodes whitespace and angle brackets;
+// parentheses are encoded too because they end a Markdown link target.
+function safeUrl(url: string): string | null {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+  return parsed.href.replace(/\(/g, "%28").replace(/\)/g, "%29");
 }
 
 function link(label: string, href: string): string {
-  return `[${escapeMarkdown(label)}](${escapeUrl(href)})`;
+  const target = safeUrl(href);
+  if (!target) return escapeMarkdown(label);
+  return `[${escapeMarkdown(label)}](${target})`;
 }
 
+// A code span ends at a backtick or a blank line, so both are removed.
 function code(value: string): string {
-  return `\`${value.replace(/`/g, "'")}\``;
+  return `\`${collapseWhitespace(value).replace(/`/g, "'")}\``;
 }
 
 function collapseWhitespace(value: string): string {
