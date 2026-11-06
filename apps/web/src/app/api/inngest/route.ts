@@ -3,6 +3,7 @@ import { addContactToSegment } from "@/app/_domains/user/_services/add-contact-t
 import { createGitHubIssue } from "@/app/_domains/integration/_services/github/create-github-issue.inngest";
 import { createJiraIssue } from "@/app/_domains/integration/_services/jira/create-jira-issue.inngest";
 import { createLinearIssue } from "@/app/_domains/integration/_services/linear/create-linear-issue.inngest";
+import { createTeamworkTask } from "@/app/_domains/integration/_services/teamwork/create-teamwork-task.inngest";
 import { handleJiraOAuthRevoked } from "@/app/_domains/integration/_services/jira/handle-jira-oauth-revoked.inngest";
 import { handleLinearOAuthRevoked } from "@/app/_domains/integration/_services/linear/handle-linear-oauth-revoked.inngest";
 import { notifySlackFeedbackCreated } from "@/app/_domains/integration/_services/slack/notify-slack-feedback-created.inngest";
@@ -39,6 +40,7 @@ export const { GET, POST, PUT } = serve({
     handleJiraOAuthRevoked,
     refreshJiraWebhooks,
     refreshJiraInstallationWebhooks,
+    createTeamworkTask,
     sendWelcomeEmail,
     addContactToSegment,
     scanTestimonialRequests,

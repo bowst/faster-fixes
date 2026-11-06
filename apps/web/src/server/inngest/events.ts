@@ -16,7 +16,7 @@ export const feedbackIntegrationIssueRequestedEvent = eventType(
   {
     schema: z.object({
       feedbackId: z.string(),
-      target: z.enum(["github", "linear", "jira"]),
+      target: z.enum(["github", "linear", "jira", "teamwork"]),
     }),
   },
 );
@@ -26,7 +26,7 @@ export const feedbackStatusChangedEvent = eventType("feedback/status-changed", {
     feedbackId: z.string(),
     newStatus: FeedbackStatusEnum,
     // Set when a Tracker webhook drove the change, so that Tracker is not echoed back.
-    origin: z.enum(["github", "linear", "jira"]).optional(),
+    origin: z.enum(["github", "linear", "jira", "teamwork"]).optional(),
     actor: z.enum(["user", "agent", "tracker"]),
   }),
 });

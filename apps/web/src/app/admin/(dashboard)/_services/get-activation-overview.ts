@@ -73,6 +73,7 @@ export async function getActivationOverview(
           { gitHubInstallations: { some: {} } },
           { linearInstallation: { isNot: null } },
           { jiraInstallation: { isNot: null } },
+          { teamworkInstallation: { isNot: null } },
         ],
       },
     }),
