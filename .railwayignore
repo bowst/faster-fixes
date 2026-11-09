@@ -1,0 +1,5 @@
+# Upstream's Docker self-hosting files. Railway uses a root Dockerfile over
+# Railpack, and its BuildKit cache mounts fail Railway's validation.
+Dockerfile
+.dockerignore
+docker-compose.yml
