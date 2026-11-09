@@ -38,6 +38,11 @@ export const PAID_PLAN_NAMES = [
   SubscriptionPlanName.Agency,
 ] as const;
 
+// Video sizes are counted in decimal units, the way the Pricing page and the
+// browser's file picker show them.
+const MB = 1_000_000;
+const GB = 1_000_000_000;
+
 export const PLAN_LIMITS = {
   [SubscriptionPlanName.Free]: {
     projects: 1,
@@ -50,6 +55,10 @@ export const PLAN_LIMITS = {
     teamworkIntegration: false,
     slackIntegration: false,
     whiteLabel: false,
+    videos: 1,
+    // Bytes, not countable resources: only the video quota check reads them.
+    videoFileSize: 500 * MB,
+    videoStorage: 500 * MB,
   },
   [SubscriptionPlanName.Pro]: {
     projects: 5,
@@ -62,6 +71,9 @@ export const PLAN_LIMITS = {
     teamworkIntegration: true,
     slackIntegration: true,
     whiteLabel: true,
+    videos: Infinity,
+    videoFileSize: 2 * GB,
+    videoStorage: 20 * GB,
   },
   [SubscriptionPlanName.Agency]: {
     projects: Infinity,
@@ -74,6 +86,9 @@ export const PLAN_LIMITS = {
     teamworkIntegration: true,
     slackIntegration: true,
     whiteLabel: true,
+    videos: Infinity,
+    videoFileSize: 4 * GB,
+    videoStorage: 100 * GB,
   },
 } as const;
 
@@ -123,6 +138,11 @@ export const PLAN_FEATURES = {
       highlighted: false,
     },
     {
+      id: "videos",
+      label: "1 video, up to 500 MB",
+      highlighted: false,
+    },
+    {
       id: "widget",
       label: "Website feedback widget",
       highlighted: false,
@@ -152,6 +172,11 @@ export const PLAN_FEATURES = {
     {
       id: "seats",
       label: "Up to 5 team members",
+      highlighted: false,
+    },
+    {
+      id: "videos",
+      label: "20 GB of video storage, files up to 2 GB",
       highlighted: false,
     },
     {
@@ -204,6 +229,11 @@ export const PLAN_FEATURES = {
     {
       id: "seats",
       label: "Unlimited team members",
+      highlighted: false,
+    },
+    {
+      id: "videos",
+      label: "100 GB of video storage, files up to 4 GB",
       highlighted: false,
     },
     {

@@ -144,3 +144,29 @@ describe("formatTeamworkTaskDescription", () => {
     expect(text).toContain("- userId: 42\n- beta: true");
   });
 });
+
+describe("formatTeamworkTaskDescription for a video Feedback", () => {
+  const text = formatTeamworkTaskDescription({
+    ...feedback,
+    pageUrl: null,
+    selector: null,
+    clickX: null,
+    clickY: null,
+    videoId: "vid_1",
+    videoTitle: "Homepage walkthrough v1",
+    startMs: 12340,
+    endMs: null,
+    frameX: 0.42,
+    frameY: 0.61,
+    frameWidth: null,
+    frameHeight: null,
+  });
+
+  it("replaces the Page line with the Video line", () => {
+    expect(text).toContain(
+      "**Video:** Homepage walkthrough v1 · At 0:12.340 · Point at 42%, 61%",
+    );
+    expect(text).not.toContain("**Page:**");
+    expect(text).not.toContain("null");
+  });
+});

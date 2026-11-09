@@ -7,7 +7,7 @@ import {
 import { createTeamworkTask as createTask } from "./teamwork-rest-client";
 import { getTeamworkCredentials } from "./get-teamwork-credentials";
 import { getSignedAssetUrl } from "@/server/storage/get-signed-asset-url";
-import { getAuthBaseUrl } from "@/utils/url/get-auth-base-url";
+import { buildFeedbackDashboardUrl } from "../../_helpers/build-feedback-dashboard-url";
 import type { CustomMetadata, DiagnosticTrail } from "@fasterfixes/core";
 import { prisma } from "@workspace/db";
 import { inngest } from "@/server/inngest";
@@ -41,6 +41,7 @@ export const createTeamworkTask = inngest.createFunction(
           },
         },
         reviewer: { select: { name: true } },
+        video: { select: { title: true } },
         screenshot: { select: { key: true, bucket: true } },
         teamworkTaskLink: { select: { id: true } },
       },
@@ -90,7 +91,15 @@ export const createTeamworkTask = inngest.createFunction(
       metadata: feedback.metadata as Record<string, unknown> | null,
       diagnosticTrail: feedback.diagnosticTrail as DiagnosticTrail | null,
       customMetadata: feedback.customMetadata as CustomMetadata | null,
-      dashboardUrl: `${getAuthBaseUrl()}/inbox?feedbackId=${feedback.id}`,
+      dashboardUrl: buildFeedbackDashboardUrl(feedback),
+      videoId: feedback.videoId,
+      videoTitle: feedback.video?.title,
+      startMs: feedback.startMs,
+      endMs: feedback.endMs,
+      frameX: feedback.frameX,
+      frameY: feedback.frameY,
+      frameWidth: feedback.frameWidth,
+      frameHeight: feedback.frameHeight,
     });
 
     let task;

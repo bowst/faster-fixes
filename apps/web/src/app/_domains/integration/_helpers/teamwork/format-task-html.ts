@@ -1,9 +1,13 @@
 import type { CustomMetadata, DiagnosticTrail } from "@fasterfixes/core";
-import { formatIssueTitle } from "../github/format-issue-body";
+import {
+  describeVideoLocation,
+  formatIssueTitle,
+} from "../github/format-issue-body";
 
 export type FeedbackForTeamworkTask = {
   comment: string;
-  pageUrl: string;
+  // Null on a video Feedback (ADR-0020).
+  pageUrl: string | null;
   selector: string | null;
   clickX: number | null;
   clickY: number | null;
@@ -18,6 +22,14 @@ export type FeedbackForTeamworkTask = {
   diagnosticTrail: DiagnosticTrail | null;
   customMetadata?: CustomMetadata | null;
   dashboardUrl: string;
+  videoId?: string | null;
+  videoTitle?: string | null;
+  startMs?: number | null;
+  endMs?: number | null;
+  frameX?: number | null;
+  frameY?: number | null;
+  frameWidth?: number | null;
+  frameHeight?: number | null;
 };
 
 const SEPARATOR = " · ";
@@ -82,8 +94,16 @@ export function formatTeamworkTaskDescription(
       .join("\n"),
   );
 
-  const displayUrl = feedback.pageUrl.replace(/^https?:\/\//, "");
-  const details: string[] = [`**Page:** ${link(displayUrl, feedback.pageUrl)}`];
+  const details: string[] = [];
+  if (feedback.videoId) {
+    details.push(
+      `**Video:** ${escapeMarkdown(describeVideoLocation(feedback).join(SEPARATOR))}`,
+    );
+  }
+  if (feedback.pageUrl) {
+    const displayUrl = feedback.pageUrl.replace(/^https?:\/\//, "");
+    details.push(`**Page:** ${link(displayUrl, feedback.pageUrl)}`);
+  }
 
   const locationParts: string[] = [];
   const md = feedback.metadata;
@@ -107,7 +127,7 @@ export function formatTeamworkTaskDescription(
     );
   }
   // Two trailing spaces force a line break inside one paragraph.
-  blocks.push(details.join("  \n"));
+  if (details.length > 0) blocks.push(details.join("  \n"));
 
   const envParts: string[] = [];
   if (feedback.browserName) {
